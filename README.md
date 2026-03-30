@@ -1,6 +1,6 @@
 # AirConnect Admin
 
-AirConnect Admin is a lightweight sidecar web UI for managing an existing `1activegeek/airconnect` container.
+AirConnect Admin is a lightweight sidecar web UI for managing airconnect service.
 
 ## What it does
 
