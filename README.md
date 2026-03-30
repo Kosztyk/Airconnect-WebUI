@@ -39,6 +39,7 @@ AirConnect Admin addresses those pain points by providing a focused browser-base
 - Displays the current image, container name, and start time
 - Allows you to restart, start, or stop the AirConnect container from the UI
 - Recreates the AirConnect container when service environment variables are updated, so changes take effect immediately
+<img width="1902" height="659" alt="Screenshot 2026-03-30 at 14 03 22" src="https://github.com/user-attachments/assets/0d989656-323c-40eb-8c44-0297d9f671a3" />
 
 ### AirCast and AirUPnP service argument management
 
@@ -68,6 +69,7 @@ AirConnect Admin addresses those pain points by providing a focused browser-base
 - Merges what was seen in logs with devices defined in config files
 - Helps identify renderer names, IPs, ports, MAC addresses, and origin source
 - Intended as an operational visibility feature for your AirConnect environment
+<img width="1902" height="659" alt="Screenshot 2026-03-30 at 14 03 32" src="https://github.com/user-attachments/assets/a1e515c4-ae91-43f1-af04-f63e0424cb44" />
 
 ### Logs and deployment helpers
 
