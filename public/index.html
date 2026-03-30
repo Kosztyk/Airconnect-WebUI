@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirConnect Admin</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">◈</div>
+          <div>
+            <h1>AirConnect Admin</h1>
+            <p>Container sidecar</p>
+          </div>
+        </div>
+        <nav>
+          <button class="nav-btn active" data-target="dashboard">Dashboard</button>
+          <button class="nav-btn" data-target="services">Services</button>
+          <button class="nav-btn" data-target="discovery">Discovery</button>
+          <button class="nav-btn" data-target="config">Config</button>
+          <button class="nav-btn" data-target="logs">Logs</button>
+          <button class="nav-btn" data-target="deployment">Deployment</button>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <header class="topbar">
+          <div>
+            <h2 id="page-title">Dashboard</h2>
+            <p id="subtitle">AirConnect status and quick actions</p>
+          </div>
+          <div class="actions inline-actions">
+            <button id="refresh-all" class="secondary">Refresh</button>
+            <button id="restart-container" class="primary">Restart container</button>
+          </div>
+        </header>
+
+        <section id="warning-box" class="message warning hidden">
+          <div class="message-title">Runtime warnings</div>
+          <ul id="warning-list"></ul>
+        </section>
+
+        <section id="message-box" class="message hidden"></section>
+
+        <section class="page active" id="page-dashboard">
+          <div class="grid cards-4">
+            <article class="card metric"><span>Container</span><strong id="metric-container">—</strong></article>
+            <article class="card metric"><span>AirCast</span><strong id="metric-aircast">—</strong></article>
+            <article class="card metric"><span>AirUPnP</span><strong id="metric-airupnp">—</strong></article>
+            <article class="card metric"><span>Discovered devices</span><strong id="metric-devices">—</strong></article>
+          </div>
+          <div class="grid cards-2">
+            <article class="card">
+              <h3>Runtime</h3>
+              <dl class="details">
+                <div><dt>Target container</dt><dd id="runtime-name">—</dd></div>
+                <div><dt>Image</dt><dd id="runtime-image">—</dd></div>
+                <div><dt>Started</dt><dd id="runtime-started">—</dd></div>
+                <div><dt>AirCast config</dt><dd id="runtime-aircast-config">—</dd></div>
+                <div><dt>AirUPnP config</dt><dd id="runtime-airupnp-config">—</dd></div>
+              </dl>
+            </article>
+            <article class="card">
+              <h3>Quick actions</h3>
+              <div class="stack">
+                <button id="start-container" class="secondary">Start</button>
+                <button id="stop-container" class="secondary danger">Stop</button>
+                <button id="open-services" class="secondary">Go to Services</button>
+                <button id="open-config" class="secondary">Go to Config</button>
+              </div>
+            </article>
+          </div>
+          <div class="grid cards-2 compact-grid">
+            <article class="card compact-card">
+              <h3>Config files</h3>
+              <ul class="file-list">
+                <li><span>/config/aircast.xml</span><strong id="dashboard-aircast-file">—</strong></li>
+                <li><span>/config/airupnp.xml</span><strong id="dashboard-airupnp-file">—</strong></li>
+                <li><span>/config/config.xml</span><strong id="dashboard-legacy-file">—</strong></li>
+              </ul>
+            </article>
+            <article class="card compact-card">
+              <h3>Defaults used by this UI</h3>
+              <div class="stack gap-sm">
+                <div>
+                  <label class="tiny-label">AIRCAST_VAR</label>
+                  <code id="dashboard-default-aircast">—</code>
+                </div>
+                <div>
+                  <label class="tiny-label">AIRUPNP_VAR</label>
+                  <code id="dashboard-default-airupnp">—</code>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="page-services">
+          <div class="grid cards-2">
+            <article class="card">
+              <div class="card-head">
+                <h3>AirCast</h3>
+                <label class="toggle"><input type="checkbox" id="aircast-enabled" /><span></span></label>
+              </div>
+              <label>Arguments</label>
+              <input id="aircast-var" type="text" placeholder="-x /config/aircast.xml" />
+              <p class="hint">Use an AirCast-specific file such as <code>/config/aircast.xml</code>.</p>
+              <p class="hint soft-warning">Avoid putting <code>-l 1000:2000</code> here unless you have a very specific AirCast need.</p>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <h3>AirUPnP</h3>
+                <label class="toggle"><input type="checkbox" id="airupnp-enabled" /><span></span></label>
+              </div>
+              <label>Arguments</label>
+              <input id="airupnp-var" type="text" placeholder="-x /config/airupnp.xml -l 1000:2000" />
+              <p class="hint">Use an AirUPnP-specific file such as <code>/config/airupnp.xml</code>.</p>
+              <p class="hint">For Sonos / Heos oriented setups, keep <code>-l 1000:2000</code> in <code>AIRUPNP_VAR</code>.</p>
+            </article>
+          </div>
+          <div class="actions inline-actions wrap">
+            <button id="apply-defaults" class="secondary">Apply recommended args</button>
+            <button id="save-services" class="primary">Save and recreate container</button>
+          </div>
+        </section>
+
+        <section class="page" id="page-discovery">
+          <div class="actions inline-actions discovery-toolbar wrap">
+            <button id="refresh-discovery" class="secondary">Refresh discovery</button>
+            <button id="generate-both-configs" class="secondary">Generate starter AirCast + AirUPnP XML</button>
+          </div>
+          <article class="card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>IP</th>
+                  <th>Port</th>
+                  <th>MAC</th>
+                  <th>Source(s)</th>
+                </tr>
+              </thead>
+              <tbody id="discovery-table"></tbody>
+            </table>
+          </article>
+        </section>
+
+        <section class="page" id="page-config">
+          <div class="grid cards-2">
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h3>aircast.xml</h3>
+                  <p class="subhint" id="aircast-config-path">—</p>
+                </div>
+                <span id="aircast-config-badge" class="badge">—</span>
+              </div>
+              <textarea id="aircast-config-xml" spellcheck="false"></textarea>
+              <label class="inline-check"><input type="checkbox" id="restart-after-aircast-save" /> Restart AirConnect after saving</label>
+              <div class="actions inline-actions wrap">
+                <button id="reload-aircast-config" class="secondary">Reload</button>
+                <button id="generate-aircast-config" class="secondary">Generate starter AirCast XML</button>
+                <button id="save-aircast-config" class="primary">Save aircast.xml</button>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h3>airupnp.xml</h3>
+                  <p class="subhint" id="airupnp-config-path">—</p>
+                </div>
+                <span id="airupnp-config-badge" class="badge">—</span>
+              </div>
+              <textarea id="airupnp-config-xml" spellcheck="false"></textarea>
+              <label class="inline-check"><input type="checkbox" id="restart-after-airupnp-save" /> Restart AirConnect after saving</label>
+              <div class="actions inline-actions wrap">
+                <button id="reload-airupnp-config" class="secondary">Reload</button>
+                <button id="generate-airupnp-config" class="secondary">Generate starter AirUPnP XML</button>
+                <button id="save-airupnp-config" class="primary">Save airupnp.xml</button>
+              </div>
+            </article>
+          </div>
+          <div class="grid cards-1 compact-grid">
+            <article class="card compact-card">
+              <div class="card-head">
+                <div>
+                  <h3>Legacy config.xml</h3>
+                  <p class="subhint" id="legacy-config-path">—</p>
+                </div>
+                <span id="legacy-config-badge" class="badge neutral">Legacy</span>
+              </div>
+              <p class="hint">The app now prefers separate <code>aircast.xml</code> and <code>airupnp.xml</code> files. <code>config.xml</code> remains visible so you can migrate away from it cleanly.</p>
+              <textarea id="legacy-config-xml" spellcheck="false"></textarea>
+              <div class="actions inline-actions wrap">
+                <button id="reload-legacy-config" class="secondary">Reload</button>
+                <button id="save-legacy-config" class="secondary">Save legacy config.xml</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="page" id="page-logs">
+          <article class="card">
+            <div class="card-head">
+              <h3>Container logs</h3>
+              <div class="inline-actions">
+                <label class="inline-field">Tail <input id="log-tail" type="number" value="300" min="10" max="2000" /></label>
+                <button id="refresh-logs" class="secondary">Refresh logs</button>
+              </div>
+            </div>
+            <pre id="logs-output"></pre>
+          </article>
+        </section>
+
+        <section class="page" id="page-deployment">
+          <article class="card">
+            <div class="card-head">
+              <h3>Compose snippet</h3>
+              <button id="copy-compose" class="secondary">Copy</button>
+            </div>
+            <pre id="compose-output"></pre>
+          </article>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

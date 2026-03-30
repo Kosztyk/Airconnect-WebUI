@@ -1,0 +1,26 @@
+services:
+  airconnect:
+    image: 1activegeek/airconnect
+    container_name: airconnect
+    network_mode: host
+    volumes:
+      - /root/airconnect-admin:/config
+    environment:
+      - AIRCAST_VAR=-x /config/aircast.xml
+      - AIRUPNP_VAR=-x /config/airupnp.xml -l 1000:2000
+    restart: unless-stopped
+
+  airconnect-admin:
+    build: .
+    container_name: airconnect-admin
+    ports:
+      - "8089:8080"
+    volumes:
+      - /root/airconnect-admin:/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TARGET_CONTAINER=airconnect
+      - CONFIG_DIR=/config
+      - PORT=8080
+      - ADMIN_HOST_PORT=8089
+    restart: unless-stopped
